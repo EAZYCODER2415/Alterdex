@@ -88,7 +88,6 @@ class trade_group(app_commands.Group):
             update_user(user)
             update_user(interaction.user)
             if in_trade[str(interaction.user.id)] == "False" and in_trade[str(user.id)] == "False": # both users are not in a trade
-                global data0, data1, data1half, data2, embed
                 data0 = ""
                 data1 = ""
                 data1half = ""
@@ -113,6 +112,10 @@ class trade_group(app_commands.Group):
                     emoji="❌"
                 )
                 async def lock_callback(interaction):
+                    global data0, data1, data1half, data2, embed
+                    locked[str(interaction.user.id)] = "True"
+                    with open("./databases/locked.json", "w") as file:
+                        json.dump(locked, file)
                     lock.disabled = True
                     reset.disabled = True
                     ball_emoji = load("./databases/emoji_ids.json")
