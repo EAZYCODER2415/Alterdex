@@ -1,14 +1,6 @@
 import discord
-from threading import Thread
-from discord.ui import Select, View, Button, Modal
-from discord.ext import tasks
-from discord import ui, app_commands, Member, TextChannel
-import platform
+from discord import app_commands, TextChannel
 import json
-import random
-from datetime import datetime
-import time
-import typing
 
 bot = discord.Client(intents=discord.Intents.all())
 tree = app_commands.CommandTree(bot)
