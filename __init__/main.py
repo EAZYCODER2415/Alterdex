@@ -429,5 +429,5 @@ async def help(interaction):
 **/exchange remove**: Remove an Altball from the trade session.''')
     await interaction.response.send_message(embed=embed, ephemeral=False)
 
-bot.run("MTExODkyMjQ0OTE5OTg0NTQ2OA.GTi6FJ.awzaMBwN7Tc7dKGsE-zc1dLHcLb8I6p3jQCXB4")
+bot.run()
 # ^ PUT TOKEN HERE
