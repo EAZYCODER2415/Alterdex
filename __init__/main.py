@@ -41,11 +41,6 @@ last_executed = time.time()
 cooldown = 0
 modal_answered = False
 
-class trade_group(app_commands.Group):
-    ...
-
-group3 = trade_group(name="exchange")
-
 countryballs = load("./databases/countryball_list.json")
 spawn_channel = load("./databases/channel_setup.json")
 ball_image = load("./databases/countryball_images.json")

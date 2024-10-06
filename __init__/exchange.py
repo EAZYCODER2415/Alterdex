@@ -80,13 +80,14 @@ proposals = load("./databases/proposals.json")
 locked = load("./databases/locked.json")
 
 class trade_group(app_commands.Group):
+    
     @app_commands.command(name="begin", description="Begin trading with another user!")
     async def begin_trade(self, interaction, user: Member):
         in_trade = load("./databases/in_trade.json")
-        if user.id != interaction.user.id and user.bot is False:
+        if user.id != interaction.user.id and user.bot is False: # not yourself and not a bot
             update_user(user)
             update_user(interaction.user)
-            if in_trade[str(interaction.user.id)] == "False" and in_trade[str(user.id)] == "False":
+            if in_trade[str(interaction.user.id)] == "False" and in_trade[str(user.id)] == "False": # both users are not in a trade
                 global data0, data1, data1half, data2, embed
                 data0 = ""
                 data1 = ""
