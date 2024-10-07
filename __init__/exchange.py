@@ -92,6 +92,8 @@ class trade_group(app_commands.Group):
                 data1 = ""
                 data1half = ""
                 data2 = ""
+                user1 = str(interaction.user.id)
+                user2 = str(user.id)
                 embed = discord.Embed(title="aa", description="embed", color=0xffffff)
                 lock = Button(
                     label="Lock Proposal",
@@ -112,32 +114,39 @@ class trade_group(app_commands.Group):
                     emoji="❌"
                 )
                 async def lock_callback(interaction):
-                    global data0, data1, data1half, data2, embed
+                    global data0
+                    global data1
+                    global data1half
+                    global data2
+                    global user1
+                    global user2
                     locked[str(interaction.user.id)] = "True"
                     with open("./databases/locked.json", "w") as file:
                         json.dump(locked, file)
                     lock.disabled = True
                     reset.disabled = True
                     ball_emoji = load("./databases/emoji_ids.json")
-                    if locked[str(interaction.user.id)] == "True":
-                        data0 += ":lock: "
-                    data0 += interaction.user.name
-                    if locked[str(user.id)] == "True":
-                        data1half += ":lock: "
-                    data1half += user.name
-                    if len(proposals[str(interaction.user.id)]) == 0:
-                        data1 = "*Empty*"
+                    if str(interaction.user.id) == user1:
+                        if locked[user1] == "True":
+                            data0 = ":lock: "
+                        data0 += interaction.user.name
+                        if len(proposals[user1]) == 0:
+                            data1 = "*Empty*"
+                        else:
+                            data1 = ""
+                            for altball in proposals[user1]:
+                                data1 += ball_emoji[altball] + altball + "\n"
                     else:
-                        for altball in proposals[str(interaction.user.id)]:
-                            data1 += ball_emoji[altball] + altball + "\n"
-                    if len(proposals[str(user.id)]) == 0:
-                        data2 = "*Empty*"
-                    else:
-                        for altball in proposals[str(user.id)]:
-                            data2 += ball_emoji[altball] + altball + "\n"
-                    embed = discord.Embed(title="Altball Trading", description=f'''**<@{interaction.user.id}> has proposed a trade with <@{user.id}>**
-                    
-Add or remove Altballs you want to trade using the **/exchange add** and **/exchange remove** commands. Once you're finished with your offer, click the lock proposal button below to confirm and wait for your partner to finish.
+                        if locked[user2] == "True":
+                            data1half = ":lock: "
+                        data1half += user.name
+                        if len(proposals[user2]) == 0:
+                            data2 = "*Empty*"
+                        else:
+                            data2 = ""
+                            for altball in proposals[user2]:
+                                data2 += ball_emoji[altball] + altball + "\n"
+                    embed = discord.Embed(title=f'''**<@{interaction.user.id}> has proposed a trade with <@{user.id}>**''', description=f'''Add or remove Altballs you want to trade using the **/exchange add** and **/exchange remove** commands. Once you're finished with your offer, click the lock proposal button below to confirm and wait for your partner to finish.
 
 *Both trading partners have 30 minutes before this interaction ends.*
 **{data0}**
@@ -150,10 +159,62 @@ Add or remove Altballs you want to trade using the **/exchange add** and **/exch
                     await interaction.response.send_message(f"nigga")
 
                 async def cancel_callback(interaction):
-                    await interaction.response.send_message(f"nigga")
+                    global data0
+                    global data1
+                    global data1half
+                    global data2
+                    global user1
+                    global user2
+                    lock.disabled = True
+                    reset.disabled = True
+                    cancel.disabled = True
+                    if locked[user1] == "True":
+                        locked[user1] = "False"
+                    if locked[user2] == "True":
+                        locked[user2] = "False"
+                    in_trade[user1] = "False"
+                    in_trade[user2] = "False"
+                    with open("./databases/locked.json", "w") as file:
+                        json.dump(locked, file)
+                    with open("./databases/in_trade.json", "w") as file:
+                        json.dump(in_trade, file)
+                    embed = discord.Embed(title=f'''**<@{interaction.user.id}> has proposed a trade with <@{user.id}>**''', description=f'''Add or remove Altballs you want to trade using the **/exchange add** and **/exchange remove** commands. Once you're finished with your offer, click the lock proposal button below to confirm and wait for your partner to finish.
+
+*Trade has been canceled.*
+**{data0}**
+{data1}
+**{data1half}**
+{data2}''', color=0x9b59b6)
+                    await interaction.response.edit_message(embed=embed, view=view, ephemeral=True)
 
                 async def on_timeout(interaction):
-                    await interaction.response.send_message(f"nigga")
+                    global data0
+                    global data1
+                    global data1half
+                    global data2
+                    global user1
+                    global user2
+                    lock.disabled = True
+                    reset.disabled = True
+                    cancel.disabled = True
+                    if locked[user1] == "True":
+                        locked[user1] = "False"
+                    if locked[user2] == "True":
+                        locked[user2] = "False"
+                    in_trade[user1] = "False"
+                    in_trade[user2] = "False"
+                    with open("./databases/locked.json", "w") as file:
+                        json.dump(locked, file)
+                    with open("./databases/in_trade.json", "w") as file:
+                        json.dump(in_trade, file)
+                    embed = discord.Embed(title=f'''**<@{interaction.user.id}> has proposed a trade with <@{user.id}>**''', description=f'''Add or remove Altballs you want to trade using the **/exchange add** and **/exchange remove** commands. Once you're finished with your offer, click the lock proposal button below to confirm and wait for your partner to finish.
+
+*Trade has been canceled due to inactivity. Try again later.*
+**{data0}**
+{data1}
+**{data1half}**
+{data2}''', color=0x9b59b6)
+                    await interaction.response.edit_message(embed=embed, view=view, ephemeral=True)
 
                 lock.callback = lock_callback
                 reset.callback = reset_callback
@@ -164,29 +225,23 @@ Add or remove Altballs you want to trade using the **/exchange add** and **/exch
                 view.add_item(cancel)
                 in_trade[str(interaction.user.id)] = "True"
                 in_trade[str(user.id)] = "True"
-                ball_emoji = load("./databases/emoji_ids.json")
-                with open("./databases/in_the_trade.json", "w") as file:
+                locked[str(interaction.user.id)] = "False"
+                locked[str(user.id)] = "False"
+                proposals[str(interaction.user.id)] = []
+                proposals[str(user.id)] = []
+                with open("./databases/locked.json", "w") as file:
+                    json.dump(locked, file)
+                with open("./databases/in_trade.json", "w") as file:
                     json.dump(in_trade, file)
-                if locked[str(interaction.user.id)] == "True":
-                    data0 += ":lock: "
-                data0 += interaction.user.name
-                if locked[str(user.id)] == "True":
-                    data1half += ":lock: "
-                data1half +=user.name
-                if len(proposals[str(interaction.user.id)]) == 0:
-                    data1 = "*Empty*"
-                else:
-                    for altball in proposals[str(interaction.user.id)]:
-                        data1 += ball_emoji[altball] + altball + "\n"
-                if len(proposals[str(user.id)]) == 0:
-                    data2 = "*Empty*"
-                else:
-                    for altball in proposals[str(user.id)]:
-                        data2 += ball_emoji[altball] + altball + "\n"
-                embed = discord.Embed(title="Altball Trading", description=f'''**<@{interaction.user.id}> has proposed a trade with <@{user.id}>**
-        
-Add or remove Altballs you want to trade using the **/exchange add** and **/exchange remove** commands. Once you're finished with your offer, click the lock proposal button below to confirm and wait for your partner to finish.
-        
+                with open("./databases/proposals.json", "w") as file:
+                    json.dump(proposals, file)
+                ball_emoji = load("./databases/emoji_ids.json")
+                data0 = f''':lock: {interaction.user.name}''' 
+                data1 = "*Empty*"
+                data1half = f''':lock: {user.name}''' 
+                data2 = "*Empty*"
+                embed = discord.Embed(title=f'''**<@{interaction.user.id}> has proposed a trade with <@{user.id}>**''', description=f'''Add or remove Altballs you want to trade using the **/exchange add** and **/exchange remove** commands. Once you're finished with your offer, click the lock proposal button below to confirm and wait for your partner to finish.
+
 *Both trading partners have 30 minutes before this interaction ends.*
 **{data0}**
 {data1}
@@ -204,12 +259,12 @@ Try again.''')
     @app_commands.command(name="add", description="Add a countryball into your trading proposal!")
     async def add_trade(self, interaction, countryball: str):
         update_user(interaction.user)
-        if in_trade[str(interaction.user.id)] == "False" and locked[str(interaction.user.id)] == "False":
+        if in_trade[str(interaction.user.id)] == "True" and locked[str(interaction.user.id)] == "False":
             # if statement whether it is a favortie
             await interaction.response.send_message(f"Added {countryball}!", ephemeral=False)
         elif locked[str(interaction.user.id)] == "True":
             await interaction.response.send_message(f"You've locked your proposal, can't change it anymore.", ephemeral=True)
-        else:
+        elif in_trade[str(interaction.user.id)] == "False":
             await interaction.response.send_message(f"You are not in an ongoing trade.", ephemeral=True)
         
     @add_trade.autocomplete("countryball")
@@ -218,7 +273,7 @@ Try again.''')
         interaction, 
         current: str
     ) -> typing.List[app_commands.Choice[str]]:
-        update_user(str(interaction.user.id))
+        update_user(interaction.user)
         data = []
         user_completion = load("./databases/user_data.json")
         for countryball_option in user_completion[str(interaction.user.id)]:
