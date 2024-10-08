@@ -129,7 +129,7 @@ class trade_group(app_commands.Group):
             update_user(user)
             update_user(interaction.user)
             if in_trade[str(interaction.user.id)] == "False" and in_trade[str(user.id)] == "False": # both users are not in a trade
-                global data0, data1, data1half, data2, user1, user2, test, count, user1_name, user2_name, url
+                global data0, data1, data1half, data2, user1, user2, test, count, user1_name, user2_name, url, user1_user, user2_user
                 data0 = ""
                 data1 = ""
                 data1half = ""
@@ -139,6 +139,8 @@ class trade_group(app_commands.Group):
                 user2 = str(user.id)
                 user1_name = interaction.user.name
                 user2_name = user.name
+                user1_user = interaction.user
+                user2_user = user
                 url = ""
                 embed = discord.Embed(title="aa", description="embed", color=0xffffff)
                 lock = Button(
@@ -255,6 +257,9 @@ class trade_group(app_commands.Group):
 {data2}''', color=0x9b59b6)
                             if locked[user1] == "True" and locked[user2] == "True":
                                 # trade confirmation
+                                global user1_user, user2_user
+                                update_user(user1_user)
+                                update_user(user2_user)
                                 global url
                                 lock.disabled = True
                                 reset.disabled = True
@@ -299,6 +304,37 @@ class trade_group(app_commands.Group):
                                 offer2[user2].append(proposals[user1])
                                 with open("./databases/trade_history_offer2.json", "w") as file:
                                     json.dump(offer2, file)
+                                # move the altballs
+                                for altball in proposals[user1]:
+                                    user_completion = load("./databases/user_data.json")
+                                    catch_dates = load("./databases/catch_date.json")
+                                    favorites = load("./databases/favorites_list.json")
+                                    if altball not in user_completion[user2]:
+                                        countryball_location = user_completion[user1].index(altball)
+                                        del catch_dates[user1][int(countryball_location)]
+                                        user_completion[user1].remove(altball)
+                                        user_completion[user2].append(altball)
+                                        last_caught = datetime.utcnow().strftime("%d/%m/%Y %H:%M %p")
+                                        catch_dates[user2].append(last_caught)
+                                        with open("./databases/user_data.json", "w") as file:
+                                            json.dump(user_completion, file)
+                                        with open("./databases/catch_date.json", "w") as file:
+                                            json.dump(catch_dates, file)
+                                for altball in proposals[user2]:
+                                    user_completion = load("./databases/user_data.json")
+                                    catch_dates = load("./databases/catch_date.json")
+                                    favorites = load("./databases/favorites_list.json")
+                                    if altball not in user_completion[user1]:
+                                        countryball_location = user_completion[user2].index(altball)
+                                        del catch_dates[user2][int(countryball_location)]
+                                        user_completion[user2].remove(altball)
+                                        user_completion[user1].append(altball)
+                                        last_caught = datetime.utcnow().strftime("%d/%m/%Y %H:%M %p")
+                                        catch_dates[user1].append(last_caught)
+                                        with open("./databases/user_data.json", "w") as file:
+                                            json.dump(user_completion, file)
+                                        with open("./databases/catch_date.json", "w") as file:
+                                            json.dump(catch_dates, file)
                                 proposals[user1] = []
                                 proposals[user2] = []
                                 with open("./databases/locked.json", "w") as file:
@@ -366,15 +402,15 @@ class trade_group(app_commands.Group):
                         await interaction.response.send_message("Butt out, you're not part of this trade.", ephemeral=True)
 
                 async def cancel_callback(interaction):
+                    global data0
+                    global data1
+                    global data1half
+                    global data2
+                    global user1
+                    global user2
+                    global test
+                    global url
                     if str(interaction.user.id) == user1 or str(interaction.user.id) == user2:
-                        global data0
-                        global data1
-                        global data1half
-                        global data2
-                        global user1
-                        global user2
-                        global test
-                        global url
                         lock.disabled = True
                         reset.disabled = True
                         cancel.disabled = True
