@@ -130,6 +130,7 @@ async def on_ready():
     print(f"Bot successfully synced into Discord on {str(guildcount)} servers!")
     synced = await tree.sync()
     print(f"Synced {len(synced)} slash commands!")
+    change_status.start()
     await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name="Altballs /help"))
 
 @bot.event
