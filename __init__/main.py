@@ -41,17 +41,6 @@ last_executed = time.time()
 cooldown = 0
 modal_answered = False
 
-countryballs = load("./databases/countryball_list.json")
-spawn_channel = load("./databases/channel_setup.json")
-ball_image = load("./databases/countryball_images.json")
-user_completion = load("./databases/user_data.json")
-ball_emoji = load("./databases/emoji_ids.json")
-catch_dates = load("./databases/catch_date.json")
-favorites = load("./databases/favorites_list.json")
-in_trade = load("./databases/in_trade.json")
-proposals = load("./databases/proposals.json")
-locked = load("./databases/locked.json")
-
 def update_user(user):
     user_completion = load("./databases/user_data.json")
     catch_dates = load("./databases/catch_date.json")
@@ -59,6 +48,10 @@ def update_user(user):
     in_trade = load("./databases/in_trade.json")
     proposals = load("./databases/proposals.json")
     locked = load("./databases/locked.json")
+    th_date = load("./databases/trade_history_date.json")
+    with_who = load("./databases/trade_history_who.json")
+    offer1 = load("./databases/trade_history_offer1.json")
+    offer2 = load("./databases/trade_history_offer2.json")
     try:
         print(f"User @{user}: {user_completion[str(user.id)]}")
     except KeyError:
@@ -107,6 +100,53 @@ def update_user(user):
         locked[str(user.id)] = "False"
         with open("./databases/locked.json", "w") as file:
             json.dump(locked, file)
+    try:
+        print(th_date[str(user.id)])
+    except KeyError:
+        with open("./databases/trade_history_date.json", "r") as file:
+            th_date = json.load(file)
+        th_date[str(user.id)] = []
+        with open("./databases/trade_history_who.json", "w") as file:
+            json.dump(th_date, file)
+    try:
+        print(with_who[str(user.id)])
+    except KeyError:
+        with open("./databases/trade_history_who.json", "r") as file:
+            with_who = json.load(file)
+        with_who[str(user.id)] = []
+        with open("./databases/trade_history_who.json", "w") as file:
+            json.dump(with_who, file)
+    try:
+        print(offer1[str(user.id)])
+    except KeyError:
+        with open("./databases/trade_history_offer1.json", "r") as file:
+            offer1 = json.load(file)
+        offer1[str(user.id)] = []
+        with open("./databases/trade_history_offer1.json", "w") as file:
+            json.dump(offer1, file)
+    try:
+        print(offer2[str(user.id)])
+    except KeyError:
+        with open("./databases/trade_history_offer2.json", "r") as file:
+            offer2 = json.load(file)
+        offer2[str(user.id)] = []
+        with open("./databases/trade_history_offer2.json", "w") as file:
+            json.dump(offer2, file)
+
+countryballs = load("./databases/countryball_list.json")
+spawn_channel = load("./databases/channel_setup.json")
+ball_image = load("./databases/countryball_images.json")
+user_completion = load("./databases/user_data.json")
+ball_emoji = load("./databases/emoji_ids.json")
+catch_dates = load("./databases/catch_date.json")
+favorites = load("./databases/favorites_list.json")
+in_trade = load("./databases/in_trade.json")
+proposals = load("./databases/proposals.json")
+locked = load("./databases/locked.json")
+th_date = load("./databases/trade_history_date.json")
+with_who = load("./databases/trade_history_who.json")
+offer1 = load("./databases/trade_history_offer1.json")
+offer2 = load("./databases/trade_history_offer2.json")
 
 @bot.event
 async def on_ready():
