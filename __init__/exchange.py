@@ -566,7 +566,8 @@ Try again.''')
         return data
 
     @app_commands.command(name="redirect", description="Navigate back to your trading session!")
-    async def remove_trade(self, interaction):
+    async def redirect_link(self, interaction):
+        update_user(interaction.user)
         in_trade = load("./databases/in_trade.json")
         if in_trade[str(interaction.user.id)] == "True":
             global url
