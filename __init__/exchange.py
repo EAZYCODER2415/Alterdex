@@ -274,9 +274,33 @@ class trade_group(app_commands.Group):
                                 locked[user2] = "False"
                                 in_trade[user1] = "False"
                                 in_trade[user2] = "False"
+                                url = ""
+                                with open("./databases/trade_history_date.json", "r") as file:
+                                    th_date = json.load(file)
+                                th_date[user1].append(datetime.utcnow().strftime("%d/%m/%Y %H:%M %p"))
+                                th_date[user2].append(datetime.utcnow().strftime("%d/%m/%Y %H:%M %p"))
+                                with open("./databases/trade_history_date.json", "w") as file:
+                                    json.dump(th_date, file)
+                                with open("./databases/trade_history_who.json", "r") as file:
+                                    with_who = json.load(file)
+                                with_who[user1].append(user2_name)
+                                with_who[user2].append(user1_name)
+                                with open("./databases/trade_history_who.json", "w") as file:
+                                    json.dump(with_who, file)
+                                with open("./databases/trade_history_offer1.json", "r") as file:
+                                    offer1 = json.load(file)
+                                offer1[user1].append(proposals[user1])
+                                offer1[user2].append(proposals[user2])
+                                with open("./databases/trade_history_offer1.json", "w") as file:
+                                    json.dump(offer1, file)
+                                with open("./databases/trade_history_offer2.json", "r") as file:
+                                    offer2 = json.load(file)
+                                offer2[user1].append(proposals[user2])
+                                offer2[user2].append(proposals[user1])
+                                with open("./databases/trade_history_offer2.json", "w") as file:
+                                    json.dump(offer2, file)
                                 proposals[user1] = []
                                 proposals[user2] = []
-                                url = ""
                                 with open("./databases/locked.json", "w") as file:
                                     json.dump(locked, file)
                                 with open("./databases/in_trade.json", "w") as file:
