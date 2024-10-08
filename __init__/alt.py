@@ -462,6 +462,7 @@ Try again.''')
             prev.disabled = True
             next.disabled = True
             quit.disabled = True
+            embeds[page].color = 0xe74c3c
             await interaction.response.edit_message(embed=embeds[page], view=view)
         
         async def previous_callback(interaction):
@@ -494,6 +495,7 @@ Try again.''')
             prev.disabled = True
             next.disabled = True
             quit.disabled = True
+            embeds[page].color = 0xe74c3c
             await interaction.response.edit_message(embed=embeds[page], view=view)
         
         quit.callback = quit_callback
@@ -731,6 +733,7 @@ Try again.''')
             prev.disabled = True
             next.disabled = True
             quit.disabled = True
+            embeds[page].color = 0xe74c3c
             await interaction.response.edit_message(embed=embeds[page], view=view)
 
         async def previous_callback(interaction):
@@ -763,6 +766,7 @@ Try again.''')
             prev.disabled = True
             next.disabled = True
             quit.disabled = True
+            embeds[page].color = 0xe74c3c
             await interaction.response.edit_message(embed=embeds[page], view=view)
 
         quit.callback = quit_callback
