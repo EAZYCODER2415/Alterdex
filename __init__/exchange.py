@@ -579,4 +579,118 @@ Try again.''')
         else:
             await interaction.response.send_message(f"You are not in an ongoing trade.", ephemeral=True)
 
+    @app_commands.command(name="history", description="View your Altball trading history!")
+    async def trading_history(self, interaction):
+        update_user(interaction.user)
+        countryballs = load("./databases/countryball_list.json")
+        ball_emoji = load("./databases/emoji_ids.json")
+        embeds = []
+        toIndex = 0
+        maxPages = int(len(countryballs["countryball"]) / 5) + 1
+        if (len(countryballs["countryball"]) % 5 == 0):
+            maxPages -= 1
+        index = 0
+        desc = ""
+        divisor = 1
+        temp = 0
+        while (index < maxPages):
+            desc = f'''Altball rarity'''
+            toIndex = 5 * divisor 
+            j = temp
+            while (j < toIndex):
+                try:
+                    if (j == 0):
+                        desc += f'''
+**{countryballs["countryball"][j]}**
+{ball_emoji[countryballs["countryball"][j]]} Rarity: 0.99'''
+                    else:
+                        desc += f'''
+**{countryballs["countryball"][j]}**
+{ball_emoji[countryballs["countryball"][j]]} Rarity: {round((len(countryballs["countryball"]) - j) / len(countryballs["countryball"]), 2)}'''
+                    temp += 1
+                except IndexError:
+                    pass
+                j += 1
+            divisor += 1
+            embed = discord.Embed(title="", description=desc, color=0xfce33f)
+            embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
+            embed.set_footer(text=f"Page {index+1}/{maxPages}")
+            embeds.append(embed)
+            index += 1
+
+        prev = Button(
+            label="<",
+            style=discord.ButtonStyle.secondary,
+            disabled=False
+        )
+        quit = Button(
+            label="Quit",
+            style=discord.ButtonStyle.danger,
+            disabled=False
+        )
+        next = Button(
+            label=">",
+            style=discord.ButtonStyle.secondary,
+            disabled=False
+        )
+        global page
+        page = 0
+        if page == 0:
+            prev.disabled = True
+        else: 
+            prev.disabled = False
+        if page == len(embeds)-1:
+            next.disabled = True
+        else: 
+            next.disabled = False
+
+        async def quit_callback(interaction):
+            prev.disabled = True
+            next.disabled = True
+            quit.disabled = True
+            embeds[page].color = 0xe74c3c
+            await interaction.response.edit_message(embed=embeds[page], view=view)
+
+        async def previous_callback(interaction):
+            global page
+            page -= 1
+            if page == 0:
+                prev.disabled = True
+            else: 
+                prev.disabled = False
+            if page == len(embeds)-1:
+                next.disabled = True
+            else: 
+                next.disabled = False
+            await interaction.response.edit_message(embed=embeds[page], view=view)
+
+        async def nextpg_callback(interaction):
+            global page
+            page += 1
+            if page == len(embeds)-1:
+                next.disabled = True
+            else: 
+                next.disabled = False
+            if page == 0:
+                prev.disabled = True
+            else: 
+                prev.disabled = False
+            await interaction.response.edit_message(embed=embeds[page], view=view)
+
+        async def on_timeout(interaction):
+            prev.disabled = True
+            next.disabled = True
+            quit.disabled = True
+            embeds[page].color = 0xe74c3c
+            await interaction.response.edit_message(embed=embeds[page], view=view)
+
+        quit.callback = quit_callback
+        prev.callback = previous_callback
+        next.callback = nextpg_callback
+        view = View(timeout=30.0)
+        view.add_item(prev)
+        view.add_item(next)
+        view.add_item(quit)
+        await interaction.response.send_message(embed=embeds[page], view=view)
+
 group3 = trade_group(name="exchange")

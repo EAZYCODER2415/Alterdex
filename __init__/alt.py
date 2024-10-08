@@ -706,14 +706,12 @@ Try again.''')
     async def rarityList(self, interaction):
         update_user(interaction.user)
         countryballs = load("./databases/countryball_list.json")
-        user_completion = load("./databases/user_data.json")
         ball_emoji = load("./databases/emoji_ids.json")
         embeds = []
         toIndex = 0
         maxPages = int(len(countryballs["countryball"]) / 5) + 1
         if (len(countryballs["countryball"]) % 5 == 0):
             maxPages -= 1
-        collectedlist = ""
         index = 0
         desc = ""
         divisor = 1
