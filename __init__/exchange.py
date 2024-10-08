@@ -138,12 +138,16 @@ class trade_group(app_commands.Group):
                         else:
                             data1 = ""
                             for altball in proposals[user1]:
+                                if len(proposals[user1]) > 1:
+                                    data1 += "\n"
                                 data1 += ball_emoji[altball] + " " + altball
                         if len(proposals[user2]) == 0:
                             data2 = "*Empty*"
                         else:
                             data2 = ""
                             for altball in proposals[user2]:
+                                if len(proposals[user2]) > 1:
+                                    data2 += "\n"
                                 data2 += ball_emoji[altball] + " " + altball
                         with open("./databases/proposals.json", "w") as file:
                             json.dump(proposals, file)
@@ -184,6 +188,8 @@ class trade_group(app_commands.Group):
                             else:
                                 data1 = ""
                                 for altball in proposals[user1]:
+                                    if len(proposals[user1]) > 1:
+                                        data1 += "\n"
                                     data1 += ball_emoji[altball] + " " + altball
                         else:
                             if locked[user2] == "True":
@@ -194,6 +200,8 @@ class trade_group(app_commands.Group):
                             else:
                                 data2 = ""
                                 for altball in proposals[user2]:
+                                    if len(proposals[user2]) > 1:
+                                        data2 += "\n"
                                     data2 += ball_emoji[altball] + " " + altball
                         embed = discord.Embed(title=f'''**<@{interaction.user.id}> has proposed a trade with <@{user.id}>**''', description=f'''Add or remove Altballs you want to trade using the **/exchange add** and **/exchange remove** commands. Once you're finished with your offer, click the lock proposal button below to confirm and wait for your partner to finish.
 
@@ -256,6 +264,8 @@ class trade_group(app_commands.Group):
                             else:
                                 data1 = ""
                                 for altball in proposals[user1]:
+                                    if len(proposals[user1]) > 1:
+                                        data1 += "\n"
                                     data1 += ball_emoji[altball] + " " + altball
                         else:
                             proposals[user2] = []
@@ -264,6 +274,8 @@ class trade_group(app_commands.Group):
                             else:
                                 data2 = ""
                                 for altball in proposals[user2]:
+                                    if len(proposals[user2]) > 1:
+                                        data2 += "\n"
                                     data2 += ball_emoji[altball] + " " + altball
                         with open("./databases/proposals.json", "w") as file:
                             json.dump(proposals, file)
