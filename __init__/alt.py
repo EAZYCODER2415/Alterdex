@@ -125,7 +125,9 @@ class balls_group(app_commands.Group):
     async def balls_list(self, interaction, user:Member=None, sort:str=None):
         if user == None:
             user = interaction.user
+            update_user(interaction.user)
         if user.bot is False:
+            update_user(user)
             button1 = Button(
                 label="<",
                 style=discord.ButtonStyle.secondary,
@@ -209,8 +211,8 @@ Caught on {catch_dates[str(user.id)][user_completion[str(user.id)].index(select.
                     await interaction.response.edit_message(content=f"**<@{interaction.user.id}>'s Altball list** - Page {page+1}/{maxPages}", view=lists[page])
                 else:
                     await interaction.response.edit_message(content=f"**<@{user.id}>'s Altball list** - Page {page+1}/{maxPages}", view=lists[page])
-        
-            if user == None:
+            if user == None and len(user_completion[str(interaction.user.id)]) > 0:
+                update_user(interaction.user)
                 if sort == 'Most recent':
                     user_completion[str(interaction.user.id)].sort(reverse=True)
                 elif sort == 'Alphabetic':
@@ -274,6 +276,7 @@ Caught on {catch_dates[str(user.id)][user_completion[str(user.id)].index(select.
                     lists.append(view)
                     index += 1
             else:
+                update_user(user)
                 if sort == 'Most recent':
                     user_completion[str(user.id)].sort(reverse=True)
                 elif sort == 'Alphabetic':
@@ -552,19 +555,25 @@ Try again.''')
         update_user(interaction.user)
         user_completion = load("./databases/user_data.json")
         catch_dates = load("./databases/catch_date.json")
-        await interaction.response.send_message(f'''Altball Name: **{str(user_completion[str(interaction.user.id)][-1])}**
+        if len(user_completion[str(interaction.user.id)]) > 0:
+            await interaction.response.send_message(f'''Altball Name: **{str(user_completion[str(interaction.user.id)][-1])}**
 
 ATK: blah blah
 HP: blah blah
 
 Caught on {str(catch_dates[str(interaction.user.id)][-1])}''', ephemeral=False)
+        else:
+            await interaction.response.send_message("You havent't caught anything yet")
         
     @app_commands.command(name="info", description="Shows you the info of a countryball!")
     async def ball_info(self, interaction, countryball: str):
         update_user(interaction.user)
         user_completion = load("./databases/user_data.json")
         catch_dates = load("./databases/catch_date.json")
-        await interaction.response.send_message(f'''Altball Name: **{countryball}**
+        if countryball == "none":
+            await interaction.response.send_message("There are no Altballs, go collect some.", ephemeral=True)
+        else:
+            await interaction.response.send_message(f'''Altball Name: **{countryball}**
 
 ATK: blah blah
 HP: blah blah
@@ -580,36 +589,42 @@ Caught on {str(catch_dates[str(interaction.user.id)][user_completion[str(interac
         update_user(interaction.user)
         data = []
         user_completion = load("./databases/user_data.json")
-        for countryball_option in user_completion[str(interaction.user.id)]:
-            favorites = load("./databases/favorites_list.json")
-            inList = False
-            for i in range(len(favorites[str(interaction.user.id)])):
-                if (favorites[str(interaction.user.id)][i] == countryball_option):
-                    inList = True
-            if (inList):
-                data.append(app_commands.Choice(name=f"❤️ {countryball_option}", value=countryball_option))
-            else:
-                data.append(app_commands.Choice(name=countryball_option, value=countryball_option))
+        if len(user_completion[str(interaction.user.id)]) == 0:
+            data.append(app_commands.Choice(name="No Altballs in your inventory.", value="none"))
+        else:
+            for countryball_option in user_completion[str(interaction.user.id)]:
+                favorites = load("./databases/favorites_list.json")
+                inList = False
+                for i in range(len(favorites[str(interaction.user.id)])):
+                    if (favorites[str(interaction.user.id)][i] == countryball_option):
+                        inList = True
+                if (inList):
+                    data.append(app_commands.Choice(name=f"❤️ {countryball_option}", value=countryball_option))
+                else:
+                    data.append(app_commands.Choice(name=countryball_option, value=countryball_option))
         return data
     
     @app_commands.command(name="favorite", description="Set an Altball as your favorite!")
     async def favorite_set(self, interaction, countryball: str):
         update_user(interaction.user)
-        favorites = load("./databases/favorites_list.json")
-        ball_emoji = load("./databases/emoji_ids.json")
-        inList = False
-        for i in range(len(favorites[str(interaction.user.id)])):
-            if (favorites[str(interaction.user.id)][i] == countryball):
-                inList = True
-        if (inList):
-            await interaction.response.send_message(f'''{ball_emoji[countryball]} **{countryball}** is already a favorite Altball. Choose something else''', ephemeral=True)
-        else:
-            with open("./databases/favorites_list.json", "r") as file:
-                favorites = json.load(file)
-            favorites[str(interaction.user.id)].append(countryball)
-            with open("./databases/favorites_list.json", "w") as file:
-                json.dump(favorites, file)
-            await interaction.response.send_message(f'''{ball_emoji[countryball]} **{countryball}** is now a favorite Altball.''', ephemeral=True)
+        if countryball == "none":
+            await interaction.response.send_message("There are no Altballs, go collect some.", ephemeral=True)
+        else:    
+            favorites = load("./databases/favorites_list.json")
+            ball_emoji = load("./databases/emoji_ids.json")
+            inList = False
+            for i in range(len(favorites[str(interaction.user.id)])):
+                if (favorites[str(interaction.user.id)][i] == countryball):
+                    inList = True
+            if (inList):
+                await interaction.response.send_message(f'''{ball_emoji[countryball]} **{countryball}** is already a favorite Altball. Choose something else''', ephemeral=True)
+            else:
+                with open("./databases/favorites_list.json", "r") as file:
+                    favorites = json.load(file)
+                favorites[str(interaction.user.id)].append(countryball)
+                with open("./databases/favorites_list.json", "w") as file:
+                    json.dump(favorites, file)
+                await interaction.response.send_message(f'''{ball_emoji[countryball]} **{countryball}** is now a favorite Altball.''', ephemeral=True)
 
     @favorite_set.autocomplete("countryball")
     async def balls_autocomplete(
@@ -620,46 +635,50 @@ Caught on {str(catch_dates[str(interaction.user.id)][user_completion[str(interac
         update_user(interaction.user)
         data = []
         user_completion = load("./databases/user_data.json")
-        for countryball_option in user_completion[str(interaction.user.id)]:
-            favorites = load("./databases/favorites_list.json")
-            inList = False
-            for i in range(len(favorites[str(interaction.user.id)])):
-                if (favorites[str(interaction.user.id)][i] == countryball_option):
-                    inList = True
-            if (inList):
-                data.append(app_commands.Choice(name=f"❤️ {countryball_option}", value=countryball_option))
-            else:
-                data.append(app_commands.Choice(name=countryball_option, value=countryball_option))
+        if len(user_completion[str(interaction.user.id)]) == 0:
+            data.append(app_commands.Choice(name="No Altballs in your inventory.", value="none"))
+        else:
+            for countryball_option in user_completion[str(interaction.user.id)]:
+                favorites = load("./databases/favorites_list.json")
+                inList = False
+                for i in range(len(favorites[str(interaction.user.id)])):
+                    if (favorites[str(interaction.user.id)][i] == countryball_option):
+                        inList = True
+                if not inList:
+                    data.append(app_commands.Choice(name=countryball_option, value=countryball_option))
         return data
     
     @app_commands.command(name="donate", description="Gift a user one of your Altballs!")
     async def give_ball(self, interaction, user: Member, countryball: str):
-        if user.bot is False and user.id != interaction.user.id:
-            update_user(user)
-            update_user(interaction.user)
-            user_completion = load("./databases/user_data.json")
-            catch_dates = load("./databases/catch_date.json")
-            favorites = load("./databases/favorites_list.json")
-            if countryball not in user_completion[str(user.id)]:
-                countryball_location = user_completion[str(interaction.user.id)].index(countryball)
-                del catch_dates[str(interaction.user.id)][int(countryball_location)]
-                user_completion[str(interaction.user.id)].remove(countryball)
-                user_completion[str(user.id)].append(countryball)
-                last_caught = datetime.utcnow().strftime("%d/%m/%Y %H:%M %p")
-                catch_dates[str(user.id)].append(last_caught)
-                with open("./databases/user_data.json", "w") as file:
-                    json.dump(user_completion, file)
-                with open("./databases/catch_date.json", "w") as file:
-                    json.dump(catch_dates, file)
-                if (countryball in favorites[str(interaction.user.id)]):
-                    favorites[str(interaction.user.id)].remove(countryball)
-                    with open("./databases/favorites_list.json", "w") as file:
-                        json.dump(favorites, file)
-                await interaction.response.send_message(f"You just donated the Altball {ball_emoji[countryball]} {countryball} to <@{user.id}>!", ephemeral=False)
+            if countryball == "none":
+                await interaction.response.send_message("There are no Altballs, go collect some.", ephemeral=True)
             else:
-                await interaction.response.send_message(f"<@{user.id}> already has that Altball, donate something else!", ephemeral=False)
-        else:
-            await interaction.response.send_message(f'''You cannot donate Altballs to:
+                if user.bot is False and user.id != interaction.user.id:
+                    update_user(user)
+                    update_user(interaction.user)
+                    user_completion = load("./databases/user_data.json")
+                    catch_dates = load("./databases/catch_date.json")
+                    favorites = load("./databases/favorites_list.json")
+                    if countryball not in user_completion[str(user.id)]:
+                        countryball_location = user_completion[str(interaction.user.id)].index(countryball)
+                        del catch_dates[str(interaction.user.id)][int(countryball_location)]
+                        user_completion[str(interaction.user.id)].remove(countryball)
+                        user_completion[str(user.id)].append(countryball)
+                        last_caught = datetime.utcnow().strftime("%d/%m/%Y %H:%M %p")
+                        catch_dates[str(user.id)].append(last_caught)
+                        with open("./databases/user_data.json", "w") as file:
+                            json.dump(user_completion, file)
+                        with open("./databases/catch_date.json", "w") as file:
+                            json.dump(catch_dates, file)
+                        if (countryball in favorites[str(interaction.user.id)]):
+                            favorites[str(interaction.user.id)].remove(countryball)
+                            with open("./databases/favorites_list.json", "w") as file:
+                                json.dump(favorites, file)
+                        await interaction.response.send_message(f"You just donated the Altball {ball_emoji[countryball]} {countryball} to <@{user.id}>!", ephemeral=False)
+                    else:
+                        await interaction.response.send_message(f"<@{user.id}> already has that Altball, donate something else!", ephemeral=False)
+                else:
+                    await interaction.response.send_message(f'''You cannot donate Altballs to:
 - **Bots**
 - **Yourself**
 Try again.''')
@@ -673,16 +692,19 @@ Try again.''')
         update_user(interaction.user)
         data = []
         user_completion = load("./databases/user_data.json")
-        for countryball_option in user_completion[str(interaction.user.id)]:
-            favorites = load("./databases/favorites_list.json")
-            inList = False
-            for i in range(len(favorites[str(interaction.user.id)])):
-                if (favorites[str(interaction.user.id)][i] == countryball_option):
-                    inList = True
-            if (inList):
-                data.append(app_commands.Choice(name=f"❤️ {countryball_option}", value=countryball_option))
-            else:
-                data.append(app_commands.Choice(name=countryball_option, value=countryball_option))
+        if len(user_completion[str(interaction.user.id)]) == 0:
+            data.append(app_commands.Choice(name="No Altballs in your inventory.", value="none"))
+        else:
+            for countryball_option in user_completion[str(interaction.user.id)]:
+                favorites = load("./databases/favorites_list.json")
+                inList = False
+                for i in range(len(favorites[str(interaction.user.id)])):
+                    if (favorites[str(interaction.user.id)][i] == countryball_option):
+                        inList = True
+                if (inList):
+                    data.append(app_commands.Choice(name=f"❤️ {countryball_option}", value=countryball_option))
+                else:
+                    data.append(app_commands.Choice(name=countryball_option, value=countryball_option))
         return data
     
     @app_commands.command(name="count", description="Count how many Altballs you have!")
