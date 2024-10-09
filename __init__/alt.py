@@ -417,10 +417,11 @@ Try again.''')
         notcollectedlistdivisor = 1
         global collectedListDone
         collectedListDone = False
-        if len(user_completion(str(interaction.user.id))) == 0:
+        user_completion = load("./databases/user_data.json")
+        if len(user_completion[str(interaction.user.id)]) == 0:
+            notCollectedIndex = 0
             while (index < maxPages):
                 # person with no altballs view
-                global collectedListDone
                 collectedListDone = True
                 notcollectedlist = ""
                 toIndex = notcollectedlistdivisor * 74
@@ -434,6 +435,7 @@ Try again.''')
                         pass
                     z += 1
                 notcollectedlistdivisor += 1
+                desc = f'''Alterdex completion: **{round(len(collected) / len(countryballs["countryball"]), 2)}%**'''
                 if collectedListDone is True:
                     if notCollectedIndex == index:
                         desc += f'''
