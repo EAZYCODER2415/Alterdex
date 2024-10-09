@@ -180,6 +180,35 @@ async def on_guild_join(guild):
     spawn_channel[guild.id] = ""
     with open("./databases/channel_setup.json", "w") as file:
         json.dump(spawn_channel, file)
+    system_channel_fetch = guild.system_channel
+    rules_channel_fetch = guild.rules_channel
+    if system_channel_fetch != None or rules_channel_fetch != None:
+        if system_channel_fetch != None:
+            channel = system_channel_fetch
+        elif rules_channel_fetch != None:
+            channel = rules_channel_fetch
+    else:
+        channel_list = guild.text_channels
+        channel = channel_list[random.randint(0, len(channel_list))]
+    countryballs = load("./databases/countryball_list.json")
+    user_completion = load("./databases/user_data.json")
+    embed = discord.Embed(title=f"Thank you for inviting Alterdex to your server!", description=f'''Welcome Alterdex, a fan-made countryball collection bot that consists of "alternate universe" countrtyballs known as Altballs created by passionate Ballsdex fans. Collect them all, trade them with friends, and battle against your opponents!
+
+Latest version **1.12.0**
+
+`{len(countryballs["countryball"])}` Altballs to collect
+`{len(bot.guilds)}` servers playing
+Over more than `{len(user_completion)}`+ players worldwide!
+
+Enjoy using Alterdex!!!''', color=0x3498db)
+    embed.set_thumbnail(url=f"{bot.user.avatar.url}")
+    embed.add_field(name="Time to get started!", value=f'''- Type `/config enable` to start your setup of Altball spawning.
+- Then type command `/help` to get more details of the bot's usage!''')
+    embed.add_field(name="Reach out to us!", value=f'''Support server: https://discord.gg/Z4dKyTBCcp
+Official website: https://06e4669a-78d5-4707-a8f3-64193ea36aa4-00-3mm3mw187esqy.janeway.replit.dev/
+YouTube channel: https://m.youtube.com/channel/UCZlZPQ4FZA8yj-gqDcRlixA''')
+    embed.set_footer(text=f"Python {platform.python_version()} • discord.py {discord.__version__}")
+    await channel.send(embed=embed)
 
 @bot.event
 async def on_guild_remove(guild):
