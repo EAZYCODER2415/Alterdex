@@ -202,7 +202,7 @@ Over more than `{len(user_completion)}`+ players worldwide!
 
 Enjoy using Alterdex!!!''', color=0x3498db)
     embed.set_thumbnail(url=f"{bot.user.avatar.url}")
-    embed.add_field(name="Time to get started!", value=f'''- Type `/config enable` to start your setup of Altball spawning.
+    embed.add_field(name="Time to get started!", value=f'''- Type `/config setup` to start your setup of Altball spawning.
 - Then type command `/help` to get more details of the bot's usage!''')
     embed.add_field(name="Reach out to us!", value=f'''Support server: https://discord.gg/Z4dKyTBCcp
 Official website: https://06e4669a-78d5-4707-a8f3-64193ea36aa4-00-3mm3mw187esqy.janeway.replit.dev/
@@ -343,7 +343,9 @@ async def help(interaction):
 **/help**: Open this help menu.''')
     embed.add_field(name="Trade", value=f'''**/exchange begin**: Begin trade with other player.
 **/exchange add**: Add an Altball to the trade session.
-**/exchange remove**: Remove an Altball from the trade session.''')
+**/exchange remove**: Remove an Altball from the trade session.
+**/exchange redirect**: Navigate back to your trading session!
+**/exchange history**: View your Altball trading history!''')
     await interaction.response.send_message(embed=embed, ephemeral=False)
 
 bot.run()
