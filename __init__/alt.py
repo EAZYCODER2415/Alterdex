@@ -417,30 +417,13 @@ Try again.''')
         notcollectedlistdivisor = 1
         global collectedListDone
         collectedListDone = False
-        while (index < maxPages):
-            if (len(collected) != collectedtempnum):
-                collectedlist = ""
-                toIndex = collectedlistdivisor * 74
-                j = collectedtempnum
-                while (j < toIndex):
-                    try:
-                        collectedlist += collected[j]
-                        collectedtemp += collected[j]
-                        collectedlistnum += 1
-                        collectedtempnum += 1
-                    except IndexError:
-                        pass
-                    j += 1
-                if collectedlistnum == collectedtempnum:
-                    collectedListDone = True
-                    notCollectedIndex = index
-                collectedlistdivisor += 1
-            if (len(not_collected) != notcollectedtempnum and len(collected) == collectedtempnum):
+        if len(user_completion(str(interaction.user.id))) == 0:
+            while (index < maxPages):
+                # person with no altballs view
+                global collectedListDone
+                collectedListDone = True
                 notcollectedlist = ""
-                if (collectedlistnum != 0):
-                    toIndex = notcollectedlistdivisor * (74 - collectedlistnum)
-                else:
-                    toIndex = notcollectedlistdivisor * 74
+                toIndex = notcollectedlistdivisor * 74
                 z = notcollectedtempnum
                 while (z < toIndex):
                     try:
@@ -451,29 +434,77 @@ Try again.''')
                         pass
                     z += 1
                 notcollectedlistdivisor += 1
-            desc = f'''Alterdex completion: **{round(len(collected) / len(countryballs["countryball"]), 2)}%**'''
-            if index == 0:
-                desc += f'''
-**__Owned Altballs__**
-{collectedlist}'''
-            else:
-                if notCollectedIndex == index or collectedtempnum != len(collected):
-                    desc += f'''
-{collectedlist}'''
-            if collectedListDone is True:
-                if notCollectedIndex == index:
-                    desc += f'''
+                if collectedListDone is True:
+                    if notCollectedIndex == index:
+                        desc += f'''
 **__Other Altballs__**
 {notcollectedlist}'''
-                else:
-                    desc += f'''
+                    else:
+                        desc += f'''
 {notcollectedlist}'''
-                    
-            embed = discord.Embed(title="", description=desc, color=0xfce33f)
-            embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
-            embed.set_footer(text=f"Page {index+1}/{maxPages}")
-            embeds.append(embed)
-            index += 1
+                embed = discord.Embed(title="", description=desc, color=0xfce33f)
+                embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
+                embed.set_footer(text=f"Page {index+1}/{maxPages}")
+                embeds.append(embed)
+                index += 1
+        else:
+            while (index < maxPages):
+                if (len(collected) != collectedtempnum):
+                    collectedlist = ""
+                    toIndex = collectedlistdivisor * 74
+                    j = collectedtempnum
+                    while (j < toIndex):
+                        try:
+                            collectedlist += collected[j]
+                            collectedtemp += collected[j]
+                            collectedlistnum += 1
+                            collectedtempnum += 1
+                        except IndexError:
+                            pass
+                        j += 1
+                    if collectedlistnum == collectedtempnum:
+                        collectedListDone = True
+                        notCollectedIndex = index
+                    collectedlistdivisor += 1
+                if (len(not_collected) != notcollectedtempnum and len(collected) == collectedtempnum):
+                    notcollectedlist = ""
+                    if (collectedlistnum != 0):
+                        toIndex = notcollectedlistdivisor * (74 - collectedlistnum)
+                    else:
+                        toIndex = notcollectedlistdivisor * 74
+                    z = notcollectedtempnum
+                    while (z < toIndex):
+                        try:
+                            notcollectedlist += not_collected[z]
+                            notcollectedtemp += not_collected[z]
+                            notcollectedtempnum += 1
+                        except IndexError:
+                            pass
+                        z += 1
+                    notcollectedlistdivisor += 1
+                desc = f'''Alterdex completion: **{round(len(collected) / len(countryballs["countryball"]), 2)}%**'''
+                if index == 0:
+                    desc += f'''
+**__Owned Altballs__**
+{collectedlist}'''
+                else:
+                    if notCollectedIndex == index or collectedtempnum != len(collected):
+                        desc += f'''
+{collectedlist}'''
+                if collectedListDone is True:
+                    if notCollectedIndex == index:
+                        desc += f'''
+**__Other Altballs__**
+{notcollectedlist}'''
+                    else:
+                        desc += f'''
+{notcollectedlist}'''
+                        
+                embed = discord.Embed(title="", description=desc, color=0xfce33f)
+                embed.set_author(name=interaction.user, icon_url=interaction.user.avatar.url)
+                embed.set_footer(text=f"Page {index+1}/{maxPages}")
+                embeds.append(embed)
+                index += 1
         
         prev = Button(
             label="<",
