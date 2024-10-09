@@ -74,7 +74,7 @@ def update_user(user):
         with open("./databases/trade_history_date.json", "r") as file:
             th_date = json.load(file)
         th_date[str(user.id)] = []
-        with open("./databases/trade_history_who.json", "w") as file:
+        with open("./databases/trade_history_date.json", "w") as file:
             json.dump(th_date, file)
     try:
         print(with_who[str(user.id)])
