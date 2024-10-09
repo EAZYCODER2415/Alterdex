@@ -432,25 +432,9 @@ class trade_group(app_commands.Group):
                         if str(interaction.user.id) == user1:
                             data0 = ":no_entry_sign: "
                             data0 += user1_name
-                            if len(proposals[user1]) == 0:
-                                data1 = "*Empty*"
-                            else:
-                                data1 = ""
-                                for altball in proposals[user1]:
-                                    if proposals[user1].index(altball) >= 1:
-                                        data1 += "\n"
-                                    data1 += ball_emoji[altball] + " " + altball
                         elif str(interaction.user.id) == user2:
                             data1half = ":no_entry_sign: "
                             data1half += user2_name
-                            if len(proposals[user2]) == 0:
-                                data2 = "*Empty*"
-                            else:
-                                data2 = ""
-                                for altball in proposals[user2]:
-                                    if proposals[user2].index(altball) >= 1:
-                                        data2 += "\n"
-                                    data2 += ball_emoji[altball] + " " + altball
                         embed = discord.Embed(title=f'''**<@{interaction.user.id}> has proposed a trade with <@{user.id}>**''', description=f'''Add or remove Altballs you want to trade using the **/exchange add** and **/exchange remove** commands. Once you're finished with your offer, click the lock proposal button below to confirm and wait for your partner to finish.
 
 *Trade has been canceled.*
